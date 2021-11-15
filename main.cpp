@@ -41,11 +41,11 @@ void Graph::insertEdge(string from, string to, int weight) {
 
 //Traverses Graph and Prints Edges of Each Vertice
 void Graph::print(){
-    cout<< "GRAPH TRAVERSAL-" << endl;
+    cout<< "Destinations & Prices-" << endl;
     for(it = mapList.begin(); it != mapList.end(); ++it) {
         cout << it->first << " ->";
         for(int j = 0; j < it->second.size(); j++)
-            cout << " " << it->second[j].first << " " << it->second[j].second << " |";
+            cout << " " << it->second[j].first << " $" << it->second[j].second << " |";
         cout<<"\n";
     }
 }
@@ -140,21 +140,92 @@ void randomInsertions(Graph& graphObj,int insertions){
     //dijkstra(graphObj,locations[uniLocation(rng)]);//Dijkstra's From Random Location
 }
 
+//User Interface (Menu Options)
+void menu(Graph& graphObj){
+    //Menu    
+    while(true){
+        cout << " " << endl;
+        cout << "------------" << endl;
+        cout << "FIND MY WAY" << endl;
+        cout << "------------" << endl;
+        cout << " " << endl;
+        int feature;
+        cout << "1. Load Destinations & Prices" << endl;
+        cout << "2. Display Minimum Costs From Starting Destination" << endl;
+        cout << "3. Display Possible Round Trips" << endl;
+        cout << "4. Display All Destinations and Prices" << endl;
+        cout << "5. Exit" << endl;
+        cout << "Option#: ";
+        cin >> feature;
+        cout << " " << endl;
+
+        //Features
+        if(feature == 1){ //Load Destinations & Prices Manually
+            int option;
+            cout << "1. Load Manually" <<endl;
+            cout << "2. Generate Random Insertions" << endl;
+            cout << "Option#: ";
+            cin >> option;
+            if(option == 1) { //Load Locations & Prices Manually
+                int numDestinations = 0;
+                cout << "Enter Number of Destinations: ";
+                cin >> numDestinations;
+                cout << " " << endl;
+                string to, from;
+                int price;
+                for(int i = 0; i < numDestinations; i++){
+                    cout << "Enter Destinations-" << endl;
+                    cout << "From To Price (A B 5): ";
+                    cin >> from >> to >> price;
+                    graphObj.insertEdge(from,to,price);
+                }
+                cout << " " << endl;
+            }
+            else if(option == 2){ //Randomly Generate Locations & Prices
+                int numInsertions;
+                cout << "Enter Number of Random Insertions: ";
+                cin>>numInsertions;
+                cout << " " << endl;
+                randomInsertions(graphObj, numInsertions);
+                cout << " " << endl;
+            }
+        }
+        else if(feature == 2){ //Dijkstra's Minimum Price
+            string from;
+            cout << "Find Minimum Cost From: ";
+            cin >> from;
+            cout << " " << endl;
+            dijkstra(graphObj,from);
+        }
+        else if(feature == 3){ //Cycle Detection Round Trips
+            //Function that Displays Round Trips!
+        }
+        else if(feature == 4){ //Display Destinations & Prices
+            graphObj.print();
+        }
+        else if(feature == 5){ //Exit
+            break;
+        }
+    }
+}
+
 int main(){
     Graph graphObj;
-    graphObj.insertEdge("A","B",4);
-    graphObj.insertEdge("B","C",1);
-    graphObj.insertEdge("C","D",8);
-    graphObj.insertEdge("D","E",9);
-    graphObj.insertEdge("D","F",5);
-    graphObj.insertEdge("F","E",12);
-    graphObj.insertEdge("G","F",7);
-    graphObj.insertEdge("A","G",10);
-    graphObj.insertEdge("B","G",2);
-    graphObj.insertEdge("G","C",6);
+    // graphObj.insertEdge("A","B",4);
+    // graphObj.insertEdge("B","C",1);
+    // graphObj.insertEdge("C","D",8);
+    // graphObj.insertEdge("D","E",9);
+    // graphObj.insertEdge("D","F",5);
+    // graphObj.insertEdge("F","E",12);
+    // graphObj.insertEdge("G","F",7);
+    // graphObj.insertEdge("A","G",10);
+    // graphObj.insertEdge("B","G",2);
+    // graphObj.insertEdge("G","C",6);
     
-    graphObj.print();
-    dijkstra(graphObj,"A");
+    // graphObj.print();
+    // dijkstra(graphObj,"A");
+
+    menu(graphObj);
 
     return 0;
 }
