@@ -123,6 +123,128 @@ void dijkstra(Graph& graphObj, string source) {
     cout << "FROM: " << source << " TO " << graphObj.keysRefNum[minIndex] << endl;
 }
 
+void bellmanFord(Graph& graphObj, string source){
+    int max = 2147483647;
+
+    //Creating a map to store the shortest distance to a vertex, key represents vertex and value represents the shortest distance to it
+    // map<string, int> result;
+    // //Adding vertices to the map with infinite distance (except source, with distance 0)
+    // for(auto const& keyValue : graphObj.mapList){
+    //     string vertex = keyValue.first;
+    //     if(vertex == source){
+    //         result[vertex] = 0;
+    //     }else{
+    //         result[vertex] = max;
+    //     }
+    // }
+
+    
+    // cout << "Making sure the map stored the correct values " << endl;
+    // for(auto const& kv: result){
+    //     cout << "Key: " << kv.first <<  " Value: " << kv.second << endl;
+    // }
+
+
+    //Want to maintain order so perhaps a vector of pairs is better suited
+
+    vector<pair<string,int>> result; // Contains the vertex as first and its distance to reach as second.
+    int numVertices = 0;
+    for(auto const& keyValue: graphObj.mapList){
+        numVertices++;
+        string vertex = keyValue.first;
+        if(vertex == source){result.push_back(make_pair(vertex,0));}
+        else{result.push_back(make_pair(vertex, max));}
+    }
+
+    //cout << "Making sure the map stored the correct values " << endl;
+    //cout << "Number of vertices: " << numVertices << endl;
+
+
+    // Number of iterations, V - 1 
+    for(int i =0; i < numVertices - 1;i++){
+        //Traversing through the graph and updating values
+        for(int j=0;j<result.size();j++){
+            // .first is the vertex and .second is the current distance it takes to travel to it
+            string currVertex = result[j].first;
+            int currTravelDistance = result[j].second;
+
+            if(currTravelDistance == max){continue;} // Can't do anything if we have not yet visited the vertex
+            else{ // If we have an existing value for the vertex
+                // For each vertex adjacent to it, obtain the value travel = currVertex distance + travel distance to adjacent vertex
+                // If travel < the vertex's current travel distance, replace the adjacents current's value with travel.
+                vector<pair<string, int>> adjacentVerticesWithWeights = graphObj.mapList[currVertex];
+                for(int k = 0; k <adjacentVerticesWithWeights.size(); k++){
+                    string adjVertex = adjacentVerticesWithWeights[k].first;
+                    int distanceToAdjVertexFromCurrVertex = adjacentVerticesWithWeights[k].second;
+                    int newTravelDistance = currTravelDistance + distanceToAdjVertexFromCurrVertex;
+                    /* ISSUE: Obtaining the current value of the adjVertex in the result is not easy since it is not a map
+                    - To find the value, will need to iterate through result until we find an element who's .first matches the adjVertex
+                       and then stores that values .secomd the the currentValueOfAdjVertexInResult
+                    */
+                    int currValueOfAdjVertexInResult = -1;
+                    for(int h = 0; h< result.size(); h++){
+                        string vertex = result[h].first;
+                        if(vertex == adjVertex) { currValueOfAdjVertexInResult = result[h].second;}
+                    }
+                    if(currValueOfAdjVertexInResult == -1){ cout << "(1) THERE IS AN ERROR" << endl;}
+
+
+                    // Only change the value of the result.second if the new value is less than the existing.
+                    if( newTravelDistance < currValueOfAdjVertexInResult){
+                        //currValueOfAdjVertexInResult = newTravelDistance; handled below, can potentially remove for loop by
+                        // using integer reference
+                        for(int h = 0; h< result.size(); h++){
+                            string vertex = result[h].first;
+                            if(vertex == adjVertex) { result[h].second = newTravelDistance;}
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    cout << "COSTS FROM " << '"' << source << '"' << " TO THE FOLLOWING DESTINATIONS-" << endl;
+    
+    int minIndex = -1;
+    int minValue = max;
+    
+    for(int i=0;i<result.size();i++){
+        int currValue = result[i].second;
+
+        cout << source << " to " << result[i].first << ": $" << currValue << endl;
+
+        if(currValue != 0 && currValue < minValue ) { 
+            minValue = currValue;
+            minIndex = i;
+        }
+
+    }
+
+    cout << " " << endl;
+    cout << "MINIMUM COST: $" << minValue << endl;
+    cout << "FROM: " << source << " TO " << result[minIndex].first << endl;
+
+    // Now to obtain the minimum cost from one vertex to the other
+    
+
+
+
+
+
+
+
+    // for(int i=0;i<result.size();i++){
+    //     cout << "Key: " << result[i].first <<  " Value: " << result[i].second << endl;
+    // }
+
+
+
+
+    cout << "Works up to here!" << endl;
+
+}
+
 //Randomly Insert Edges to Graph
 void randomInsertions(Graph& graphObj, int insertions) {
     //Random Price and Location Generator
@@ -214,22 +336,46 @@ void menu(Graph& graphObj) {
 }
 
 int main() {
+    cout << "\n\n" << endl;
+
     Graph graphObj;
-    // graphObj.insertEdge("A","B",4);
-    // graphObj.insertEdge("B","C",1);
-    // graphObj.insertEdge("C","D",8);
-    // graphObj.insertEdge("D","E",9);
-    // graphObj.insertEdge("D","F",5);
-    // graphObj.insertEdge("F","E",12);
-    // graphObj.insertEdge("G","F",7);
-    // graphObj.insertEdge("A","G",10);
-    // graphObj.insertEdge("B","G",2);
-    // graphObj.insertEdge("G","C",6);
+    graphObj.insertEdge("A","B",4);
+    graphObj.insertEdge("B","C",1);
+    graphObj.insertEdge("C","D",8);
+    graphObj.insertEdge("D","E",9);
+    graphObj.insertEdge("D","F",5);
+    graphObj.insertEdge("F","E",12);
+    graphObj.insertEdge("G","F",7);
+    graphObj.insertEdge("A","G",10);
+    graphObj.insertEdge("B","G",2);
+    graphObj.insertEdge("G","C",6);
 
-    // graphObj.print();
-    // dijkstra(graphObj,"A");
+    graphObj.print();
+    cout << "\n\n==== Dijkstra ====\n\n" << endl;
+    dijkstra(graphObj,"A");
 
-    menu(graphObj);
+    cout << "\n\n==== Bellman-Ford ====\n\n" << endl;
 
+    bellmanFord(graphObj, "A");
+
+    // Graph graphObj2;
+    // graphObj2.insertEdge("S","A", 10);
+    // graphObj2.insertEdge("S","E",8);
+    // graphObj2.insertEdge("A","C",2);
+    // graphObj2.insertEdge("B","A",1);
+    // graphObj2.insertEdge("C","B",-2);
+    // graphObj2.insertEdge("D","A",-4);
+    // graphObj2.insertEdge("D","C",-1);
+    // graphObj2.insertEdge("E","D",1);
+
+    // cout << "Hey there" << endl;
+    // bellmanFord(graphObj2, "S");
+
+
+
+    //menu(graphObj);
+
+
+    cout << "\n\n" << endl;
     return 0;
 }
