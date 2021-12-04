@@ -108,7 +108,14 @@ void dijkstra(Graph& graphObj, string source) {
     }
     cout << "COSTS FROM " << '"' << source << '"' << " TO THE FOLLOWING DESTINATIONS-" << endl;
     for (int i = 0; i < distance.size(); i++) {
-        cout << source << " to " << graphObj.keysRefNum[i] << ": $" << distance[i] << endl;
+        int currValue = distance[i];
+
+        if(currValue == max){
+            cout << source << " to " << graphObj.keysRefNum[i] << ": No path available." << endl;
+        } else {
+            cout << source << " to " << graphObj.keysRefNum[i] << ": $" << distance[i] << endl;
+        }
+
     }
     int minIndex = 1;
     int minValue = distance[1];
@@ -126,25 +133,6 @@ void dijkstra(Graph& graphObj, string source) {
 void bellmanFord(Graph& graphObj, string source){
     int max = 2147483647;
 
-    //Creating a map to store the shortest distance to a vertex, key represents vertex and value represents the shortest distance to it
-    // map<string, int> result;
-    // //Adding vertices to the map with infinite distance (except source, with distance 0)
-    // for(auto const& keyValue : graphObj.mapList){
-    //     string vertex = keyValue.first;
-    //     if(vertex == source){
-    //         result[vertex] = 0;
-    //     }else{
-    //         result[vertex] = max;
-    //     }
-    // }
-
-    
-    // cout << "Making sure the map stored the correct values " << endl;
-    // for(auto const& kv: result){
-    //     cout << "Key: " << kv.first <<  " Value: " << kv.second << endl;
-    // }
-
-
     //Want to maintain order so perhaps a vector of pairs is better suited
 
     vector<pair<string,int>> result; // Contains the vertex as first and its distance to reach as second.
@@ -156,6 +144,7 @@ void bellmanFord(Graph& graphObj, string source){
         else{result.push_back(make_pair(vertex, max));}
     }
 
+    // Used for testing
     //cout << "Making sure the map stored the correct values " << endl;
     //cout << "Number of vertices: " << numVertices << endl;
 
@@ -212,7 +201,11 @@ void bellmanFord(Graph& graphObj, string source){
     for(int i=0;i<result.size();i++){
         int currValue = result[i].second;
 
-        cout << source << " to " << result[i].first << ": $" << currValue << endl;
+        if(currValue == max){
+            cout << source << " to " << result[i].first << ": No path available." << endl;
+        } else {
+            cout << source << " to " << result[i].first << ": $" << currValue << endl;
+        }
 
         if(currValue != 0 && currValue < minValue ) { 
             minValue = currValue;
@@ -227,21 +220,10 @@ void bellmanFord(Graph& graphObj, string source){
 
     // Now to obtain the minimum cost from one vertex to the other
     
-
-
-
-
-
-
-
+    // Used for testing
     // for(int i=0;i<result.size();i++){
     //     cout << "Key: " << result[i].first <<  " Value: " << result[i].second << endl;
     // }
-
-
-
-
-    cout << "Works up to here!" << endl;
 
 }
 
@@ -277,8 +259,8 @@ void menu(Graph& graphObj) {
         cout << " " << endl;
         int feature;
         cout << "1. Load Destinations & Prices" << endl;
-        cout << "2. Display Minimum Costs From Starting Destination" << endl;
-        cout << "3. Display Possible Round Trips" << endl;
+        cout << "2. Display Minimum Costs From Starting Destination (Dijkstra)" << endl;
+        cout << "3. Display Minimum Costs From Starting Destination (Bellman-Ford)" << endl;
         cout << "4. Display All Destinations and Prices" << endl;
         cout << "5. Exit" << endl;
         cout << "Option#: ";
@@ -324,7 +306,11 @@ void menu(Graph& graphObj) {
             dijkstra(graphObj, from);
         }
         else if (feature == 3) { //Bellman Ford
-
+            string from;
+            cout << "Find Minimum Cost From: ";
+            cin >> from;
+            cout << " " << endl;
+            bellmanFord(graphObj, from);
         }
         else if (feature == 4) { //Display Destinations & Prices
             graphObj.print();
@@ -339,24 +325,24 @@ int main() {
     cout << "\n\n" << endl;
 
     Graph graphObj;
-    graphObj.insertEdge("A","B",4);
-    graphObj.insertEdge("B","C",1);
-    graphObj.insertEdge("C","D",8);
-    graphObj.insertEdge("D","E",9);
-    graphObj.insertEdge("D","F",5);
-    graphObj.insertEdge("F","E",12);
-    graphObj.insertEdge("G","F",7);
-    graphObj.insertEdge("A","G",10);
-    graphObj.insertEdge("B","G",2);
-    graphObj.insertEdge("G","C",6);
+    // graphObj.insertEdge("A","B",4);
+    // graphObj.insertEdge("B","C",1);
+    // graphObj.insertEdge("C","D",8);
+    // graphObj.insertEdge("D","E",9);
+    // graphObj.insertEdge("D","F",5);
+    // graphObj.insertEdge("F","E",12);
+    // graphObj.insertEdge("G","F",7);
+    // graphObj.insertEdge("A","G",10);
+    // graphObj.insertEdge("B","G",2);
+    // graphObj.insertEdge("G","C",6);
 
-    graphObj.print();
-    cout << "\n\n==== Dijkstra ====\n\n" << endl;
-    dijkstra(graphObj,"A");
+    // graphObj.print();
+    // cout << "\n\n==== Dijkstra ====\n\n" << endl;
+    // dijkstra(graphObj,"A");
 
-    cout << "\n\n==== Bellman-Ford ====\n\n" << endl;
+    // cout << "\n\n==== Bellman-Ford ====\n\n" << endl;
 
-    bellmanFord(graphObj, "A");
+    // bellmanFord(graphObj, "A");
 
     // Graph graphObj2;
     // graphObj2.insertEdge("S","A", 10);
@@ -373,7 +359,7 @@ int main() {
 
 
 
-    //menu(graphObj);
+    menu(graphObj);
 
 
     cout << "\n\n" << endl;
