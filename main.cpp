@@ -6,6 +6,9 @@
 #include<algorithm>
 #include<random>
 #include<fstream>
+#include<chrono>
+#include<thread>
+using namespace std::chrono;
 using namespace std;
 
 struct Edge {
@@ -244,8 +247,7 @@ void randomInsertions(Graph& graphObj, int insertions) {
         destFile << locations[randomLocation1] << "," << locations[randomLocation2] << "," << randomPrice << "\n";
     }
     destFile.close();
-    graphObj.print(); //Print Graph
-    //dijkstra(graphObj,locations[uniLocation(rng)]);//Dijkstra's From Random Location
+    //graphObj.print(); //Print Graph
 }
 
 //User Interface (Menu Options)
@@ -303,14 +305,22 @@ void menu(Graph& graphObj) {
             cout << "Find Minimum Cost From: ";
             cin >> from;
             cout << " " << endl;
+            auto start = high_resolution_clock::now();
             dijkstra(graphObj, from);
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
+            cout << "Elapsed Time: " << duration.count() << " microseconds" << endl;
         }
         else if (feature == 3) { //Bellman Ford
             string from;
             cout << "Find Minimum Cost From: ";
             cin >> from;
             cout << " " << endl;
+            auto start = high_resolution_clock::now();
             bellmanFord(graphObj, from);
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
+            cout << "Elapsed Time: " << duration.count() << " microseconds" << endl;
         }
         else if (feature == 4) { //Display Destinations & Prices
             graphObj.print();
